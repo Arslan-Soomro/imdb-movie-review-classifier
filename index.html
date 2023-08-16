@@ -6,7 +6,18 @@
     <title>Review Classifier</title>
 </head>
 <body>
-    <h1>Hello World</h1>
+    <div>
+        <textarea placeholder="write a review" id="text_area">
+
+        </textarea>
+        <button id="classify_btn">Classify</button>
+        <p>Result: <span id="result"></span></p>
+    </div>
+    
+    <script src="
+https://cdn.jsdelivr.net/npm/lossless-json@2.0.11/lib/umd/lossless-json.min.js
+"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
     <script src="./script.js"></script>
 </body>
 </html>

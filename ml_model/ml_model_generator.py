@@ -26,14 +26,14 @@ data_to_write = {
 }
 
 # Save sorted list to file .json
-with open("ml_model/model/word_index.json", "w") as f:
+with open("ml_model/model/word_index.json", "w", encoding="utf-8") as f:
     json.dump(data_to_write, f, ensure_ascii=False, indent=4)
 
 print("Created the word_index.json file!");
 
-
-#%% Create the model.json file
 '''
+#%% Create the model.json file
+
 # Function that multi hot encodes the sequences
 def vectorize_sequences(sequences, dimension=10000):
   results = np.zeros((len(sequences), dimension));
