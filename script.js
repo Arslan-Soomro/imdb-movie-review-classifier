@@ -1,5 +1,3 @@
-// const MODEL_URL = "https://drive.google.com/file/d/1RTKFvww4RV3h4cze7ctzE6GjqRv048ih";
-// const WORD_INDEX_URL = "https://drive.google.com/file/d/1YsIRtBAqFe_vn3uUyJJbc_frh6tqG_cb";
 const MODEL_URL = "/ml_model/model/model.json";
 const WORD_INDEX_URL = "/ml_model/model/word_index.json";
 const TOTAL_WORDS = 10000;
@@ -10,41 +8,66 @@ async function loadModel() {
   return model;
 }
 
-function textToSequence(text, wordIndexes, totalWords) {
-  console.log(wordIndexes);
-  const sequence = Array(totalWords).fill(0);
-  text.split(" ").forEach((word) => {
-    console.log(word, word.toLowerCase(), wordIndexes[word.toLowerCase()]);
-    const thisWordIndex = wordIndexes[word.toLowerCase()];
-    console.log("wordIndex: ", thisWordIndex);
-    if (thisWordIndex != null) {
-      sequence[thisWordIndex] = 1;
+function textToSequence(text, words, noTotalWords) {
+  const tokens = text.toLowerCase().split(" ");
+  const sequence = Array(noTotalWords).fill(0);
+
+  // console.log("Tokens: ", tokens);
+  // console.log("Words: ", words);
+
+  // Get All the indexes of the tokens with respect to frequency
+  const tokenIndexes = [];
+  for (let i = 0; i < tokens.length; i++) {
+    let index = words.findIndex((word) => {
+      // console.log(word, tokens[i]);
+      return word === tokens[i];
+    });
+    if (index != -1) {
+      // Indexes are shifted by 3, because 0, 1, 2 are reserved for padding, start and unknown
+      // tokenIndexes.push(index + 3);
+        tokenIndexes.push(index);
     }
+  }
+
+  // Set the indexes to 1 in the sequence
+  tokenIndexes.forEach((index, i) => {
+    sequence[index] = 1;
   });
+
   return sequence;
 }
 
 async function main() {
   console.log("main() called.");
-  const lossLessJson = window["LosslessJSON"];
+
   const wordIndexRes = await fetch(WORD_INDEX_URL);
-  const wordIndexData = await wordIndexRes.text();
-
-  const wordIndexes = wordIndexData["word_indexes"];
-  const wordFrequencies = wordIndexData["word_frequencies"];
-
-  console.log(wordIndexData);
-  console.log(JSON.parse(wordIndexData.replace(/^\uFEFF/, '')));
-  // console.log(lossLessJson.parse(wordIndexData));
-  // console.log(JSON.parse(wordIndexData));
+  const sortedWords = await wordIndexRes.json();
 
   console.log("Word Index Loaded");
 
-  // const model = await loadModel();
+  const model = await loadModel();
 
-  // const review = "l This movie was the best movie I have ever seen.";
+  console.log("Model Loaded");
+  // model.summary();
 
-  // console.log("Encoded Review: ", textToSequence(review, wordIndexes, TOTAL_WORDS).filter((val) => val != 0));
+  const review = "Wonderful movie!";
+  const sequence = trainData;// textToSequence(review, sortedWords, TOTAL_WORDS);
+  console.log("sequence", trainData);
+
+  // Convert the sequence to a tensor of shape [[null,10000]]
+  const input = tf.tensor2d([sequence], [1, TOTAL_WORDS]);
+  console.log("Input: ", input.shape, input, input.dataSync());
+
+  // Predict the output
+  const prediction = model.predict(input);
+  // console.log("Output: ", prediction.shape, prediction);
+  // console.log("Prediction: ", prediction.dataSync()[0]);
+
+  // Save prediction value into a variable
+  const predictionValue = prediction.dataSync()[0];
+
+  console.log(`${predictionValue > 0.5 ? "Positive" : "Negative"} -> ${review}`, predictionValue);
+
 }
 
 main();

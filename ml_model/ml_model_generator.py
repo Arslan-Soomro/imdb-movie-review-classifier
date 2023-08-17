@@ -11,6 +11,7 @@ import numpy as np
 (train_data, train_labels), (test_data, test_labels) = imdb.load_data(num_words=10000);
 
 #%% Create the word_index.json file
+'''
 word_index = imdb.get_word_index();
 sorted_word_frequencies = sorted(word_index.items(), key=lambda x: x[1], reverse=True)[:10000];
 
@@ -25,13 +26,16 @@ data_to_write = {
     "word_indexes": dict(sorted_word_indexes),
 }
 
+sorted_words = [word for word, _ in sorted_word_frequencies];
+
 # Save sorted list to file .json
 with open("ml_model/model/word_index.json", "w", encoding="utf-8") as f:
-    json.dump(data_to_write, f, ensure_ascii=False, indent=4)
+    # json.dumps(data_to_write, f, ensure_ascii=False, indent=4)
+    f.write(json.dumps(sorted_words, ensure_ascii=False, indent=4));
 
 print("Created the word_index.json file!");
-
 '''
+
 #%% Create the model.json file
 
 # Function that multi hot encodes the sequences
@@ -50,7 +54,11 @@ x_test = vectorize_sequences(test_data);
 y_train = np.asarray(train_labels).astype("float32");
 y_test = np.asarray(test_labels).astype("float32");
 
+import sys
+np.set_printoptions(threshold=sys.maxsize)
 
+#%% Creating and Compiling the Model
+'''
 # Creating and compiling the model
 model = keras.Sequential([
     layers.Dense(16, activation="relu"),
